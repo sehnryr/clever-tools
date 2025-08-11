@@ -236,6 +236,16 @@ async function run () {
       description: 'Import variables as JSON (an array of { "name": "THE_NAME", "value": "THE_VALUE" } objects)',
     }),
     addonId: cliparse.option('addon', { metavar: 'addon_id', description: 'Add-on ID' }),
+    userId: cliparse.option('user', { metavar: 'user_id', description: 'User ID' }),
+    showPassword: cliparse.flag('show-password', { description: 'Show password values' }),
+    userPrivilegeLogin: cliparse.option('login', {
+      description: 'User privilege login',
+      parser: Parsers.nullableBoolean,
+    }),
+    userPrivilegeCreateRole: cliparse.option('create-role', {
+      description: 'User privilege create role',
+      parser: Parsers.nullableBoolean,
+    }),
     after: cliparse.option('after', {
       metavar: 'after',
       aliases: ['since'],
@@ -615,11 +625,71 @@ async function run () {
     options: [opts.humanJsonOutputFormat],
   }, addon.list);
 
+  // ADDON USER COMMANDS
+  const addonUserListCommand = cliparse.command('list', {
+    description: 'List users for an add-on',
+    args: [opts.addonId],
+    options: [opts.showPassword, opts.humanJsonOutputFormat],
+  }, addon.user.list);
+
+  const addonUserShowCommand = cliparse.command('show', {
+    description: 'Show details of a user for an add-on',
+    args: [opts.addonId, opts.userId],
+    options: [opts.showPassword, opts.humanJsonOutputFormat],
+  }, addon.user.show);
+
+  const addonUserCreateCommand = cliparse.command('create', {
+    description: 'Create a user for an add-on',
+    args: [opts.addonId],
+    options: [opts.showPassword, opts.humanJsonOutputFormat],
+  }, addon.user.create);
+
+  const addonUserRotatePasswordCommand = cliparse.command('rotate-password', {
+    description: 'Rotate password for a user in an add-on',
+    args: [opts.addonId, opts.userId],
+    options: [opts.showPassword, opts.humanJsonOutputFormat],
+  }, addon.user.rotatePassword);
+
+  const addonUserDeleteCommand = cliparse.command('delete', {
+    description: 'Delete a user for an add-on',
+    args: [opts.addonId, opts.userId],
+    options: [opts.yes],
+  }, addon.user.delete_);
+
+  const addonUserUpdateCommand = cliparse.command('update', {
+    description: 'Update a user for an add-on',
+    args: [opts.addonId, opts.userId],
+    options: [
+      opts.userPrivilegeLogin,
+      opts.userPrivilegeCreateRole,
+    ],
+  }, addon.user.update);
+
+  const addonUserCommand = cliparse.command('user', {
+    description: 'Manage add-on users',
+    commands: [
+      addonUserListCommand,
+      addonUserShowCommand,
+      addonUserCreateCommand,
+      addonUserRotatePasswordCommand,
+      addonUserDeleteCommand,
+      addonUserUpdateCommand,
+    ],
+  });
+
   const addonCommands = cliparse.command('addon', {
     description: 'Manage add-ons',
     options: [opts.orgaIdOrName],
     privateOptions: [opts.humanJsonOutputFormat],
-    commands: [addonCreateCommand, addonDeleteCommand, addonRenameCommand, addonListCommand, addonProvidersCommand, addonEnvCommand],
+    commands: [
+      addonCreateCommand,
+      addonDeleteCommand,
+      addonRenameCommand,
+      addonListCommand,
+      addonProvidersCommand,
+      addonEnvCommand,
+      addonUserCommand,
+    ],
   }, addon.list);
 
   // APPLICATIONS COMMAND

@@ -14,6 +14,8 @@ import { resolveAddonId } from '../models/ids-resolver.js';
 import { conf } from '../models/configuration.js';
 import dedent from 'dedent';
 
+export * as user from './addon-user.js';
+
 const formatTable = initFormatTable();
 
 export async function list (params) {

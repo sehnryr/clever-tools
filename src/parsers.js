@@ -243,3 +243,28 @@ export function ngValidType (string) {
     return cliparse.parsers.error(`Invalid Network Group resource type: ${string}`);
   }
 }
+
+/**
+ * @param {?(string|boolean)} input
+ */
+export function nullableBoolean (input) {
+  if (input === null) {
+    return cliparse.parsers.success(null);
+  }
+
+  if (typeof input === 'boolean') {
+    return cliparse.parsers.success(input);
+  }
+
+  input = input.toLowerCase();
+
+  switch (input) {
+    case '':
+    case 'true':
+      return cliparse.parsers.success(true);
+    case 'false':
+      return cliparse.parsers.success(false);
+    default:
+      return cliparse.parsers.error(`Invalid boolean value: ${input}`);
+  }
+}
